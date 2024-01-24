@@ -40,7 +40,10 @@ const EditQuizForm = ({ onClose,userId, quizId}) => {
         const response = await axios.get(
           `http://localhost:3001/quiz/${quizId}`
         );
+        const quizDetails = response.data.quiz;
         setQuizData(response.data.quiz);
+        setSelectedQuizType(quizDetails.quizType);
+        setSelectedTimer(quizDetails.questions[0]?.timer || 0);
        
       } catch (error) {
         console.error("Error fetching quiz details:", error.message);
@@ -80,6 +83,8 @@ const EditQuizForm = ({ onClose,userId, quizId}) => {
           i === questionIndex ? { ...question, [name]: value } : question
         ),
       }));
+    } else{
+        setQuizData((prevData) => ({ ...prevData, [name]: value }));
     }
 
     setQuizData((prevData) => ({ ...prevData, [name]: value }));
