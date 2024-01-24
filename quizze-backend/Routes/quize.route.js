@@ -76,9 +76,9 @@ router.put('/editQuiz/:userId/:quizId', authenticate, async (req, res) => {
     }
 
     // Update only the questions array in the quiz
-    quiz.questions = questions;
-    quiz.quizName = quizName;
-    quiz.quizType = quizType;
+    quiz.questions = quiz.questions || questions;
+    quiz.quizName = quiz.quizName || quizName;
+    quiz.quizType = quiz.quizType || quizType;
 
     // Save the updated quiz
     await quiz.save();
@@ -95,7 +95,7 @@ router.get('/:publicLink', async (req, res) => {
   try {
     const { publicLink } = req.params;
 
-    const quiz = await Quiz.find({ publicLink });
+    const quiz = await Quiz.findById(publicLink);
 
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found' });
