@@ -28,35 +28,37 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [userId]);
-  const handleUpdateQuizList = async () => {
-    // You can use this function to update the quiz list after creating a new quiz
-    try {
-      const response = await axios.get(`http://localhost:3001/quiz/dashboard/${userId}`, {
-        headers: {
-          token: localStorage.getItem('token'),
-        },
-      });
-      setDashboardData(response.data);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    }
-  };
+  // const handleUpdateQuizList = async () => {
+  //   // You can use this function to update the quiz list after creating a new quiz
+  //   try {
+  //     const response = await axios.get(`http://localhost:3001/quiz/dashboard/${userId}`, {
+  //       headers: {
+  //         token: localStorage.getItem('token'),
+  //       },
+  //     });
+  //     setDashboardData(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching dashboard data:', error);
+  //   }
+  // };
   return (
-    <div>
+    <div className={styles.box}>
       {dashboardData ? (
         <>
           <div className={styles.container}>
             <div>
-              <Navbar onUpdateQuizList={handleUpdateQuizList}/>
+              <Navbar/>
             </div>
 
             <div className={styles.dashboard}>
+              <div>
               <Card
                 numberOfQuizzes={dashboardData.numberOfQuizzes}
                 totalNumberOfQuestions={dashboardData.totalNumberOfQuestions}
                 totalImpressions={dashboardData.totalImpressions}
               />
               <TrendingQuizzes quizDetails={dashboardData.quizDetails} />
+              </div>
             </div>
           </div>
         </>

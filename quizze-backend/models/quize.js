@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const optionSchema = new mongoose.Schema({
     optionText: { type: String},
     optionImgURL :{type:String},
-    optionType: { type: String, enum: ['text', 'image', 'text-and-image'], default: 'text' },
+    
 });
 
 const questionSchema = new mongoose.Schema({
@@ -11,6 +11,7 @@ const questionSchema = new mongoose.Schema({
     options: [optionSchema],
     correctAnswer: { type: String},
     timer: { type: Number, default: 10 },
+    optionType: { type: String, enum: ['text', 'image', 'text-and-image'], default: 'text' },
     optionVotes: Map,
     answerCount: { type: Number, default: 0 },
     correctCount: { type: Number, default: 0 },
@@ -25,7 +26,6 @@ const quizSchema = new mongoose.Schema({
     impression: { type: Number, default: 0 },
     questions: [questionSchema],
     quizType: { type: String, enum: ['q&a', 'poll']},
-    publicLink: { type: String},
     submissions: [
         {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

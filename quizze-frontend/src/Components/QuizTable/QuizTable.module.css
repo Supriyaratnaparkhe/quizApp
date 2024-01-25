@@ -1,10 +1,8 @@
-.quizContainer{
-  display:flex;
-  align-items: center;
-  justify-content: center;
-}
+
 .container {
-  margin-left: 100px;
+  display: flex;
+  flex-direction: column;
+  gap:30px;
 }
 .headline {
   color: #5076ff;

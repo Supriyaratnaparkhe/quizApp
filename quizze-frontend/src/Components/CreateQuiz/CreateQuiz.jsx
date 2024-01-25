@@ -2,11 +2,10 @@ import styles from "./CreateQuiz.module.css";
 import React, { useState } from "react";
 import axios from "axios";
 import del from "../assets/delete.png";
-import { ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { handleShareClick } from "../../utils/share"; 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
+const CreateQuizForm = ({ userId, onClose }) => {
   const [firstPage, setFirstPage] = useState(true);
   const [secondPage, setSecondPage] = useState(false);
   const [thirdPage, setThirdPage] = useState(false);
@@ -38,23 +37,45 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
 
     if (optionIndex !== null) {
       // Handle changes in options
+      // setQuizData((prevData) => ({
+      //   ...prevData,
+      //   questions: prevData.questions.map((question, i) =>
+      //     i === questionIndex
+      //       ? {
+      //           ...question,
+      //           options: question.options.map((option, j) =>
+      //             j === optionIndex ? { ...option, [name]: value } : option
+      //           ),
+      //           optionVotes: question.options.reduce((votes, option) => {
+      //             votes[option.optionText || optionIndex] = 0;
+      //             return votes;
+      //           }, {}),
+      //         }
+      //       : question
+      //   ),
+      // }));
       setQuizData((prevData) => ({
         ...prevData,
         questions: prevData.questions.map((question, i) =>
           i === questionIndex
             ? {
                 ...question,
-                options: question.options.map((option, j) =>
-                  j === optionIndex ? { ...option, [name]: value } : option
-                ),
-                optionVotes: question.options.reduce((votes, option) => {
-                  votes[option.optionText || optionIndex] = 0;
-                  return votes;
-                }, {}),
+                ...(optionIndex !== null
+                  ? {
+                      options: question.options.map((option, j) =>
+                        j === optionIndex ? { ...option, [name]: value } : option
+                      ),
+                      optionVotes: {
+                        ...question.optionVotes,
+                        [`${optionIndex}`]: 0,
+                      },
+                    }
+                  : { [name]: value }),
               }
             : question
         ),
       }));
+
     } else if (questionIndex !== null) {
       // Handle changes in questions
       setQuizData((prevData) => ({
@@ -80,10 +101,9 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
       );
       setQuizId(response.data.quizId);
       // const quizId = response.data.quizId;
-      onUpdateQuizList();
+
       setSecondPage(false);
       setThirdPage(true);
-
       console.log(response.data);
     } catch (error) {
       console.error("Error creating quiz:", error);
@@ -111,21 +131,45 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
     }
   };
 
+  // const handleDeleteQuestion = (questionIndex) => {
+  //   setQuizData((prevData) => {
+  //     const updatedQuestions = prevData.questions.filter(
+  //       (_, i) => i !== questionIndex
+  //     );
+
+  //     return {
+  //       ...prevData,
+  //       questions: updatedQuestions,
+  //     };
+  //   });
+  // };
+
   const handleDeleteQuestion = (questionIndex) => {
+    console.log("function called");
     setQuizData((prevData) => {
       const updatedQuestions = prevData.questions.filter(
         (_, i) => i !== questionIndex
       );
 
+      // If the active question index is greater than or equal to the deleted question index,
+      // decrease the active question index by 1 to maintain proper alignment.
+      const updatedActiveQuestionIndex =
+        activeQuestionIndex >= questionIndex
+          ? activeQuestionIndex - 1
+          : activeQuestionIndex;
+
       return {
         ...prevData,
         questions: updatedQuestions,
+        // Update the active question index in the state
+        activeQuestionIndex: updatedActiveQuestionIndex,
       };
     });
   };
 
   const handleAddOption = (questionIndex) => {
-    if (quizData.questions[questionIndex].options.length < 4) {
+    const targetQuestion = quizData.questions[questionIndex];
+    if (targetQuestion && targetQuestion.options.length < 4) {
       setQuizData((prevData) => ({
         ...prevData,
         questions: prevData.questions.map((question, i) =>
@@ -187,11 +231,23 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                   ? { ...option, isSelected: true }
                   : { ...option, isSelected: false }
               ),
-              correctAnswer: `${question.options[optionIndex].optionText} ${question.options[optionIndex].optionImgURL}`,
+              correctAnswer: generateCorrectAnswer(
+                question.options[optionIndex]
+              ),
             }
           : question
       ),
     }));
+  };
+  const generateCorrectAnswer = (option) => {
+    const optionText = option.optionText;
+    const optionImgURL = option.optionImgURL;
+
+    if (!optionText || !optionImgURL) {
+      return optionText || optionImgURL;
+    } else {
+      return `${optionText},${optionImgURL}`;
+    }
   };
   const handleSetTimer = (value) => {
     setQuizData((prevData) => ({
@@ -203,19 +259,19 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
     }));
     setSelectedTimer(value);
   };
-  // const handleShareClick = () => {
-  //   const quizLink = `http://localhost:3001/quiz/${quizId}`;
+  const handleShareClick = () => {
+    const quizLink = `http://localhost:3001/quiz/${quizId}`;
 
-  //   navigator.clipboard.writeText(quizLink).then(
-  //     () => {
-  //       toast.success('Link copied successfully!');
-  //     },
-  //     (err) => {
-  //       console.error('Unable to copy link to clipboard', err);
-  //       toast.error('Error copying link to clipboard');
-  //     }
-  //   );
-  // };
+    navigator.clipboard.writeText(quizLink).then(
+      () => {
+        toast.success("Link copied successfully!");
+      },
+      (err) => {
+        console.error("Unable to copy link to clipboard", err);
+        toast.error("Error copying link to clipboard");
+      }
+    );
+  };
   return (
     <div className={styles.container}>
       <div className={styles.create}>
@@ -275,7 +331,7 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                       key={questionIndex}
                       className={`${styles.questionItem} ${
                         activeQuestionIndex === questionIndex
-                          ? styles.active
+                          ? styles.activeQn
                           : ""
                       }`}
                       onClick={() => handleQuestionClick(questionIndex)}
@@ -307,11 +363,16 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
               </div>
 
               <div className={styles.qnText}>
-                <span>Q. {activeQuestionIndex + 1}:</span>
+                {/* <span>Q. {activeQuestionIndex + 1}:</span> */}
                 <input
                   type="text"
                   name="questionText"
-                  value={quizData.questions[activeQuestionIndex].questionText}
+                  value={
+                    quizData.questions[activeQuestionIndex] &&
+                    quizData.questions[activeQuestionIndex].questionText
+                      ? quizData.questions[activeQuestionIndex].questionText
+                      : ""
+                  }
                   onChange={(e) => handleChange(e, activeQuestionIndex)}
                   placeholder="Question Text"
                 />
@@ -325,8 +386,9 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                       name="optionType"
                       value="text"
                       checked={
+                        quizData.questions[activeQuestionIndex] &&
                         quizData.questions[activeQuestionIndex].optionType ===
-                        "text"
+                          "text"
                       }
                       onChange={(e) => handleChange(e, activeQuestionIndex)}
                     />
@@ -338,8 +400,9 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                       name="optionType"
                       value="image"
                       checked={
+                        quizData.questions[activeQuestionIndex] &&
                         quizData.questions[activeQuestionIndex].optionType ===
-                        "image"
+                          "image"
                       }
                       onChange={(e) => handleChange(e, activeQuestionIndex)}
                     />
@@ -351,8 +414,9 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                       name="optionType"
                       value="text-and-image"
                       checked={
+                        quizData.questions[activeQuestionIndex] &&
                         quizData.questions[activeQuestionIndex].optionType ===
-                        "text-and-image"
+                          "text-and-image"
                       }
                       onChange={(e) => handleChange(e, activeQuestionIndex)}
                     />
@@ -362,7 +426,7 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
               </div>
               {quizData.quizType === "q&a" && (
                 <div className={styles.timer}>
-                  <div id={styles.quizType}>Timer</div>
+                  <div>Timer</div>
                   <div
                     onClick={() => handleSetTimer(0)}
                     className={
@@ -396,149 +460,160 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                 </div>
               )}
               <div className={styles.optionContainer}>
-                {quizData.questions[activeQuestionIndex].options.map(
-                  (option, optionIndex) => (
-                    <div
-                      key={optionIndex}
-                      className={`${styles.optioninput} ${
-                        option.isSelected ? styles.selectedOption : ""
-                      }`}
-                    >
-                      {quizData.quizType === "q&a" &&
-                        quizData.questions[activeQuestionIndex].optionType !==
-                          "" && (
-                          <div id={styles.radio2}>
-                            <input
-                              type="radio"
-                              name={`correctAnswer-${activeQuestionIndex}`}
-                              onChange={() =>
-                                handleSetCorrectAnswer(
-                                  activeQuestionIndex,
-                                  optionIndex
-                                )
-                              }
-                            />
-                          </div>
+                {quizData.questions &&
+                  quizData.questions[activeQuestionIndex] &&
+                  quizData.questions[activeQuestionIndex].options &&
+                  quizData.questions[activeQuestionIndex].options.map(
+                    (option, optionIndex) => (
+                      <div
+                        key={optionIndex}
+                        className={`${styles.optioninput} ${
+                          option.isSelected ? styles.selectedOption : ""
+                        }`}
+                      >
+                        {quizData.quizType === "q&a" &&
+                          quizData.questions[activeQuestionIndex].optionType !==
+                            "" && (
+                            <div id={styles.radio2}>
+                              <input
+                                type="radio"
+                                name={`correctAnswer-${activeQuestionIndex}`}
+                                onChange={() =>
+                                  handleSetCorrectAnswer(
+                                    activeQuestionIndex,
+                                    optionIndex
+                                  )
+                                }
+                              />
+                            </div>
+                          )}
+                        {quizData.questions[activeQuestionIndex].optionType ===
+                          "text" && (
+                          <>
+                            <div className={styles.optionText}>
+                              <input
+                                type="text"
+                                name="optionText"
+                                value={option.optionText}
+                                onChange={(e) =>
+                                  handleChange(
+                                    e,
+                                    activeQuestionIndex,
+                                    optionIndex
+                                  )
+                                }
+                                placeholder="Option Text"
+                              />
+                            </div>
+                            <div>
+                              {optionIndex > 1 && (
+                                <img
+                                  onClick={() =>
+                                    handleDeleteOption(
+                                      activeQuestionIndex,
+                                      optionIndex
+                                    )
+                                  }
+                                  src={del}
+                                  alt="del"
+                                />
+                              )}
+                            </div>
+                          </>
                         )}
-                      {quizData.questions[activeQuestionIndex].optionType ===
-                        "text" && (
-                        <>
-                          <div className={styles.optionText}>
-                            <input
-                              type="text"
-                              name="optionText"
-                              value={option.optionText}
-                              onChange={(e) =>
-                                handleChange(
-                                  e,
-                                  activeQuestionIndex,
-                                  optionIndex
-                                )
-                              }
-                              placeholder="Option Text"
-                            />
-                          </div>
-                          <div>
-                            {optionIndex > 1 && (
-                              <img
-                                onClick={() =>
-                                  handleDeleteOption(
+                        {quizData.questions[activeQuestionIndex].optionType ===
+                          "image" && (
+                          <>
+                            <div className={styles.optionText}>
+                              <input
+                                type="text"
+                                name="optionImgURL"
+                                value={option.optionImgURL}
+                                onChange={(e) =>
+                                  handleChange(
+                                    e,
                                     activeQuestionIndex,
                                     optionIndex
                                   )
                                 }
-                                src={del}
-                                alt="del"
+                                placeholder="Option Image URL"
                               />
-                            )}
-                          </div>
-                        </>
-                      )}
-                      {quizData.questions[activeQuestionIndex].optionType ===
-                        "image" && (
-                        <>
-                          <div className={styles.optionText}>
-                            <input
-                              type="text"
-                              name="optionImgURL"
-                              value={option.optionImgURL}
-                              onChange={(e) =>
-                                handleChange(
-                                  e,
-                                  activeQuestionIndex,
-                                  optionIndex
-                                )
-                              }
-                              placeholder="Option Image URL"
-                            />
-                          </div>
-                          <div>
-                            {optionIndex > 1 && (
-                              <img
-                                onClick={() =>
-                                  handleDeleteOption(
+                            </div>
+                            <div>
+                              {optionIndex > 1 && (
+                                <img
+                                  onClick={() =>
+                                    handleDeleteOption(
+                                      activeQuestionIndex,
+                                      optionIndex
+                                    )
+                                  }
+                                  src={del}
+                                  alt="del"
+                                />
+                              )}
+                            </div>
+                          </>
+                        )}
+                        {quizData.questions[activeQuestionIndex].optionType ===
+                          "text-and-image" && (
+                          <>
+                            <div className={styles.optionText}>
+                              <input
+                                type="text"
+                                name="optionText"
+                                value={option.optionText}
+                                onChange={(e) =>
+                                  handleChange(
+                                    e,
                                     activeQuestionIndex,
                                     optionIndex
                                   )
                                 }
-                                src={del}
-                                alt="del"
+                                placeholder="Option Text"
                               />
-                            )}
-                          </div>
-                        </>
-                      )}
-                      {quizData.questions[activeQuestionIndex].optionType ===
-                        "text-and-image" && (
-                        <>
-                          <div className={styles.optionText}>
-                            <input
-                              type="text"
-                              name="optionText"
-                              value={option.optionText}
-                              onChange={(e) =>
-                                handleChange(
-                                  e,
-                                  activeQuestionIndex,
-                                  optionIndex
-                                )
-                              }
-                              placeholder="Option Text"
-                            />
-                            <input
-                              type="text"
-                              name="optionImgURL"
-                              value={option.optionImgURL}
-                              onChange={(e) =>
-                                handleChange(
-                                  e,
-                                  activeQuestionIndex,
-                                  optionIndex
-                                )
-                              }
-                              placeholder="Option Image URL"
-                            />
-                          </div>
-                          <div>
-                            {optionIndex > 1 && (
-                              <img
-                                onClick={() =>
-                                  handleDeleteOption(
+                              <input
+                                type="text"
+                                name="optionImgURL"
+                                value={option.optionImgURL}
+                                onChange={(e) =>
+                                  handleChange(
+                                    e,
                                     activeQuestionIndex,
                                     optionIndex
                                   )
                                 }
-                                src={del}
-                                alt="del"
+                                placeholder="Option Image URL"
                               />
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )
-                )}
-                {quizData.questions[activeQuestionIndex].options.length < 4 ? (
+                            </div>
+                            <div>
+                              {optionIndex > 1 && (
+                                <img
+                                  onClick={() =>
+                                    handleDeleteOption(
+                                      activeQuestionIndex,
+                                      optionIndex
+                                    )
+                                  }
+                                  src={del}
+                                  alt="del"
+                                />
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )
+                  )}
+                  <div id={styles.addOption}>
+                    <button
+                      onClick={() => handleAddOption(activeQuestionIndex)}
+                    >
+                      Add Option
+                    </button>
+                  </div>
+                {/* {quizData.questions &&
+                quizData.questions.length < activeQuestionIndex < 4 ? (
                   <div id={styles.addOption}>
                     <button
                       onClick={() => handleAddOption(activeQuestionIndex)}
@@ -548,7 +623,18 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                   </div>
                 ) : (
                   " "
-                )}
+                )} */}
+                {/* {quizData.questions[activeQuestionIndex].options.length < 4 ? (
+                  <div id={styles.addOption}>
+                    <button
+                      onClick={() => handleAddOption(activeQuestionIndex)}
+                    >
+                      Add Option
+                    </button>
+                  </div>
+                ) : (
+                  " "
+                )} */}
               </div>
 
               <div className={styles.submitbuttons}>
@@ -577,7 +663,7 @@ const CreateQuizForm = ({ onClose, userId, onUpdateQuizList }) => {
                 http://localhost:3001/quiz/{quizId}
               </div>
               <div className={styles.share}>
-                <button onClick={handleShareClick(quizId)}>share</button>
+                <button onClick={handleShareClick}>share</button>
               </div>
               <ToastContainer />
             </div>

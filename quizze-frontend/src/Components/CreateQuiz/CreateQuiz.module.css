@@ -66,6 +66,7 @@
   width: 171px;
   height: 46px;
   border-radius: 10px;
+  border: none;
   background: #fff;
   box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
   color: #9f9f9f;
@@ -75,10 +76,11 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  cursor: pointer;
 }
 .selectedButton button {
   border-radius: 10px;
-
+  border: none;
   box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
   background: #60b84b;
   color: #fff;
@@ -90,6 +92,7 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  cursor: pointer;
 }
 
 .but {
@@ -100,6 +103,7 @@
 .cancle button {
   border-radius: 10px;
   background: #fff;
+  border: none;
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.25);
   width: 279px;
   height: 46.144px;
@@ -109,11 +113,13 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  cursor: pointer;
 }
 .continue button {
   width: 279px;
   height: 46.144px;
   border-radius: 10px;
+  border: none;
   background: #60b84b;
   color: #fff;
   font-family: Poppins;
@@ -121,6 +127,7 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  cursor: pointer;
 }
 .page2 {
   display: flex;
@@ -161,8 +168,8 @@
 }
 .questionItem {
   display: flex;
-  width: 58px;
-  height: 58px;
+  width: 50px;
+  height: 50px;
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.25);
   align-items: center;
   justify-content: center;
@@ -236,11 +243,20 @@
   align-items: center;
   position: fixed;
   margin-left: 650px;
-  margin-top: 250px;
+  margin-top: 200px;
+  color: #9f9f9f;
+  gap: 10px;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
 .qnTimerbutton button {
   width: 95px;
   height: 34px;
+  border: none;
   border-radius: 10px;
   background: #fff;
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
@@ -251,10 +267,12 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  cursor: pointer;
 }
 .selectedTimerButton button {
   width: 95px;
   height: 34px;
+  border: none;
   border-radius: 10px;
   background: #d60000;
   color: #fff;
@@ -264,6 +282,7 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  cursor: pointer;
 }
 .optionContainer {
   height: 250px;
@@ -290,12 +309,21 @@
   line-height: normal;
 }
 #addOption button {
-  width: 296px;
-  height: 50px;
+  width: 200px;
+  border: none;
+  height: 40px;
+  border: none;
   margin-left: 10px;
   border-radius: 10px;
   background: #fff;
   box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  color: #9f9f9f;
+  font-family: Poppins;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
 #options {
   display: flex;
@@ -318,6 +346,8 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  border: none;
+  cursor: pointer;
 }
 #submit button {
   width: 279px;
@@ -330,6 +360,8 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  border: none;
+  cursor: pointer;
 }
 .selectedOption input {
   background: #60b84b;
@@ -347,13 +379,12 @@
   accent-color: #60b84b;
 }
 .page3 {
-  
   width: 845px;
   height: 481px;
   border-radius: 10px;
   background: #fff;
 }
-.shareContainer{
+.shareContainer {
   width: 845px;
   height: 400px;
   display: flex;
@@ -362,7 +393,7 @@
   justify-content: space-around;
 }
 .congrats {
-  width:450px;
+  width: 450px;
   color: #474444;
   text-align: center;
   font-family: Poppins;
@@ -387,6 +418,7 @@
 .share button {
   width: 279px;
   height: 46.144px;
+  border: none;
   border-radius: 10px;
   background: #60b84b;
   color: #fff;
@@ -398,11 +430,21 @@
   cursor: pointer;
 }
 #close button {
- margin-left:800px;
+  margin-left: 800px;
   width: 30px;
   margin-left: 130;
   background: none;
   border: none;
   color: #474444;
   cursor: pointer;
+  border: none;
+  color: #474444;
+  font-family: Poppins;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+.activeQn {
+  background: #ededed;
 }

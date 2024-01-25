@@ -4,7 +4,6 @@ dotenv.config();
 const mongoose = require('mongoose')
 const router = express.Router();
 const Quiz = require('../models/quize');
-const Quizeuser = require('../models/user');
 const authenticate = require('../middleware/authenticate');
 
 
@@ -66,7 +65,7 @@ router.post('/createQuiz/:userId', authenticate, async (req, res) => {
 router.put('/editQuiz/:userId/:quizId', authenticate, async (req, res) => {
   try {
     const { userId, quizId } = req.params;
-    const {quizName,quizType,questions } = req.body;
+    const {questions } = req.body;
 
     // Find the quiz by quizId and userId to ensure the user has the right to edit
     const quiz = await Quiz.findOne({ _id: quizId, userId });
@@ -76,9 +75,9 @@ router.put('/editQuiz/:userId/:quizId', authenticate, async (req, res) => {
     }
 
     // Update only the questions array in the quiz
-    quiz.questions = quiz.questions || questions;
-    quiz.quizName = quiz.quizName || quizName;
-    quiz.quizType = quiz.quizType || quizType;
+    quiz.questions = questions;
+    // quiz.quizName = quiz.quizName || quizName;
+    // quiz.quizType = quiz.quizType || quizType;
 
     // Save the updated quiz
     await quiz.save();
@@ -90,21 +89,46 @@ router.put('/editQuiz/:userId/:quizId', authenticate, async (req, res) => {
   }
 });
 
-// Retrieve a quiz using the public link
-router.get('/:publicLink', async (req, res) => {
-  try {
-    const { publicLink } = req.params;
 
-    const quiz = await Quiz.findById(publicLink);
+// router.get('/:quizId', async (req, res) => {
+//   try {
+//     const { quizId } = req.params;
+
+//     const quiz = await Quiz.findById(quizId);
+
+//     if (!quiz) {
+//       return res.status(404).json({ message: 'Quiz not found' });
+//     }
+
+//     res.status(200).json({ quiz });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+router.get('/:quizId', async (req, res) => {
+  // const quizId = req.params.quizId;
+
+  try {
+    // Find the quiz by its ID
+    const { quizId } = req.params;
+    const quiz = await Quiz.findById(quizId);
 
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found' });
     }
 
+    // Increment the impression field by 1
+    quiz.impression += 1;
+
+    // Save the updated quiz back to the database
+    await quiz.save();
+
+    // Send a response indicating success
     res.status(200).json({ quiz });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
@@ -145,26 +169,6 @@ router.get('/analytics/:userId/:quizId', authenticate, async (req, res) => {
   }
 });
 
-
-//   router.get('/:quizId', async (req, res) => {
-//     try {
-//       const { quizId } = req.params;
-//       console.log("Received quizId:", quizId);
-
-//       // Assuming you want to find a quiz based on the quizId
-//       const quiz = await Quiz.findById(quizId);
-
-
-//       if (!quiz) {
-//         return res.status(404).json({ error: `Quiz not found of id ${quizId}` });
-//       }
-
-//       res.status(200).json({ quiz });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ error: 'Internal Server Error' });
-//     }
-//   });
 
 router.delete('/deleteQuiz/:userId/:quizId', authenticate, async (req, res) => {
   try {

@@ -3,7 +3,7 @@ import { useParams} from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 import CreateQuizForm from "../CreateQuiz/CreateQuiz";
-const Navbar = ({onUpdateQuizList }) => {
+const Navbar = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const Navbar = ({onUpdateQuizList }) => {
             </button>
           </div>
           {showCreateModal && (
-              <CreateQuizForm userId={userId} onUpdateQuizList={onUpdateQuizList} onClose={() => setShowCreateModal(false)}/>
+              <CreateQuizForm userId={userId} onClose={() => setShowCreateModal(false)}/>
           )}
         </div>
 

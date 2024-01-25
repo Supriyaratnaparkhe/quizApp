@@ -6,6 +6,7 @@ import Login from './Pages/Login/Login'
 import Dashboard from './Pages/Dashboard/Dashboard';
 import Analytics from './Pages/Analytics/Analytics';
 import QnAnalysis from './Pages/QnAnalysis/QnAnalysis';
+import Quiz from './Pages/LiveQuiz/Quiz';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path='/dashboard/:userId' element={<Dashboard />}/>
           <Route path='/analytics/:userId' element={<Analytics />}/>
           <Route path='/analytics/:userId/:quizId' element={<QnAnalysis />}/>
+          <Route path='/:quizId' element={<Quiz />}/>
         </Routes>
       </BrowserRouter>
       

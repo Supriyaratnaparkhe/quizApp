@@ -7,8 +7,8 @@ import EditQuizForm from "../EditQuiz/EditQuiz";
 import edit from "../assets/edit.png";
 import share from "../assets/share.png";
 import del from "../assets/delete.png";
-import { ToastContainer } from "react-toastify";
-import { handleShareClick } from "../../utils/share";
+import { ToastContainer, toast } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 
 const QuizTable = () => {
@@ -56,7 +56,6 @@ const QuizTable = () => {
     });
   };
   const handleDelete = () => {
-    // Update state or trigger any necessary actions after successful deletion
     // Update local state to remove the deleted quiz
     setAnalyticData((prevData) => {
       const updatedData = {
@@ -71,22 +70,22 @@ const QuizTable = () => {
     setShowDeleteModal(false);
   };
 
-  // const handleShareClick = (quizId) => {
-  //   const quizLink = `http://localhost:3001/quiz/${quizId}`;
+  const handleShareClick = (quizId) => {
+    const quizLink = `http://localhost:3001/quiz/${quizId}`;
 
-  //   navigator.clipboard.writeText(quizLink).then(
-  //     () => {
-  //       toast.success("Link copied successfully!");
-  //     },
-  //     (err) => {
-  //       console.error("Unable to copy link to clipboard", err);
-  //       toast.error("Error copying link to clipboard");
-  //     }
-  //   );
-  // };
+    navigator.clipboard.writeText(quizLink).then(
+      () => {
+        toast.success("Link copied successfully!");
+      },
+      (err) => {
+        console.error("Unable to copy link to clipboard", err);
+        toast.error("Error copying link to clipboard");
+      }
+    );
+  };
 
   return (
-    <div className={styles.quizContainer}>
+    <div>
       {analyticData ? (
         <div className={styles.container}>
           <div className={styles.headline}>Quiz Analysis</div>
@@ -146,9 +145,6 @@ const QuizTable = () => {
                             }}
                           />
                         </div>
-                        {/* <div className={styles.share}>
-                <button onClick={handleShareClick}>share</button>
-              </div> */}
                       </div>
                     </td>
                     <td
