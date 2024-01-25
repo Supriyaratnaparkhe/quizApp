@@ -42,7 +42,7 @@ const Dashboard = () => {
     }
   };
   return (
-    <div>
+    <div style={{overflow:"hidden"}}>
       {dashboardData ? (
         <>
           <div className={styles.container}>

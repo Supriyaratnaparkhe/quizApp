@@ -1,0 +1,90 @@
+/* QuizPage.module.css */
+
+.main{
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.quizContainer {
+  width: 1066px;
+  height: 643px;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.quizeheader{
+  display: flex;
+}
+
+.questionNumber{
+color: #474444;
+font-family: Poppins;
+font-size: 40px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+padding-top: 36px;
+padding-left: 53px;
+}
+
+.questionTimer{
+color: #D60000;
+font-family: Poppins;
+font-size: 40px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+padding-top: 36px;
+padding-left: 790px;
+}
+
+.quizTitle {
+  color: #474444;
+  font-family: Poppins;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.optionsContainer {
+  display: flex;
+  justify-content: space-around;
+}
+
+.optionButton {
+  width: 320px;
+  height: 112px;
+  border-radius: 10px;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nextContainer {
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+}
+
+.nextButton {
+  width: 320px;
+  height: 56px;
+  border-radius: 10px;
+  background: #60b84b;
+  color: #ffffff;
+  font-family: Poppins;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+
+
+.selected {
+  border: 2px solid #5076FF;
+  background: #F0F0F0;
+}

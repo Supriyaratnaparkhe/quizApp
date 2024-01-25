@@ -8,6 +8,15 @@
   align-items: center;
   justify-content: space-between;
 }
+
+
+.activeTab {
+  /* Add your styling for the active tab here */
+  background-color: #ddd; /* Example background color */
+  color: #333; /* Example text color */
+  /* Add other styles as needed */
+}
+
 .quizze {
   color: #474444;
   font-family: Jomhuria;
