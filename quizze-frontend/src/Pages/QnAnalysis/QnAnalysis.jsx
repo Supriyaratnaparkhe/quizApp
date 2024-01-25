@@ -5,6 +5,7 @@ import QnA from "../../Components/QnA/QnA";
 import axios from "axios";
 import styles from "./QnAnalysis.module.css";
 import { useLocation } from "react-router-dom";
+import Spinner from "../Spinner/Spinner";
 
 const QnAnalysis = () => {
   const [quizDetails, setQuizDetails] = useState([]);
@@ -25,10 +26,10 @@ const QnAnalysis = () => {
           }
         );
         setQuizDetails(response.data.quizDetails);
-        setLoading(false);
       } catch (error) {
         console.error(error);
-
+      }
+      finally {
         setLoading(false);
       }
     };
@@ -36,20 +37,22 @@ const QnAnalysis = () => {
     fetchQuizDetails();
   }, [userId, quizId]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
   return (
-    <div className={styles.container}>
-      <div>
-        <Navbar />
-      </div>
-      <div className={styles.quiz}>
-        <QnA quizDetails={quizDetails} quizType={quizType} />
-      </div>
-    </div>
+    <>
+      {!loading ? (
+        <div className={styles.container}>
+          <div>
+            <Navbar />
+          </div>
+          <div className={styles.quiz}>
+            <QnA quizDetails={quizDetails} quizType={quizType} />
+          </div>
+        </div>
+      ) : (
+        loading && <Spinner />
+      )}
+    </>
   );
 };
 
 export default QnAnalysis;
-

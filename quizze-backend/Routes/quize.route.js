@@ -199,4 +199,60 @@ router.delete('/deleteQuiz/:userId/:quizId', authenticate, async (req, res) => {
 });
 
 
+
+
+router.put('/:quizId', async (req, res) => {
+  try {
+    const { quizId } = req.params;
+
+    // Validate user and quiz IDs
+    if ( !mongoose.Types.ObjectId.isValid(quizId)) {
+      return res.status(400).json({ error: 'Invalid quiz ID' });
+    }
+
+    // Find the quiz by user and quiz ID
+    const quiz = await Quiz.findOne({ _id: quizId });
+
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    // Update counts based on user responses
+    req.body.forEach((response) => {
+      const question = quiz.questions.find((q) => q._id.equals(response.questionId));
+
+      if (question) {
+        // Update counts based on the response
+        question.answerCount += 1;
+        if (response.isCorrect) {
+          question.correctCount += 1;
+        } else {
+          question.incorrectCount += 1;
+        }
+      }
+    });
+
+    // Save the updated quiz
+    await quiz.save();
+
+    // Return updated quiz details
+    const quizDetails = quiz.questions.map((question) => {
+      const { answerCount, correctCount, incorrectCount, optionVotes } = question;
+      return {
+        answerCount,
+        correctCount,
+        incorrectCount,
+        optionVotes,
+      };
+    });
+
+    res.status(200).json({ quizDetails });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 module.exports = router;

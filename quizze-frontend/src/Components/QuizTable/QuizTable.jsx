@@ -8,6 +8,7 @@ import edit from "../assets/edit.png";
 import share from "../assets/share.png";
 import del from "../assets/delete.png";
 import { ToastContainer, toast } from "react-toastify";
+import Spinner from "../../Pages/Spinner/Spinner"
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,6 +17,7 @@ const QuizTable = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { userId } = useParams();
   const navigate = useNavigate();
 
@@ -33,6 +35,9 @@ const QuizTable = () => {
         setAnalyticData(response.data);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+      }
+      finally {
+        setLoading(false); // Move setLoading(false) here
       }
     };
 
@@ -71,7 +76,7 @@ const QuizTable = () => {
   };
 
   const handleShareClick = (quizId) => {
-    const quizLink = `http://localhost:3001/quiz/${quizId}`;
+    const quizLink = `http://localhost:3000/liveQuiz/${quizId}`;
 
     navigator.clipboard.writeText(quizLink).then(
       () => {
@@ -187,7 +192,7 @@ const QuizTable = () => {
           </div>
         </div>
       ) : (
-        <p>Loading dashboard data...</p>
+        loading && <Spinner/> 
       )}
     </div>
   );

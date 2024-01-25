@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./Quiz.module.css";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const QuizzePage = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -9,13 +9,7 @@ const QuizzePage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [countdown, setCountdown] = useState(null);
   const { quizId } = useParams();
-//   useEffect(() => {
-//     // Fetch quiz data from the backend
-//     axios
-//       .get(`http://localhost:3001/quiz/${quizId}`)
-//       .then((response) => setQuizData(response.data.quiz))
-//       .catch((error) => console.error("Error fetching quiz data", error));
-//   }, []);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
@@ -23,10 +17,8 @@ const QuizzePage = () => {
         const response = await axios.get(
           `http://localhost:3001/quiz/${quizId}`
         );
-        
+
         setQuizData(response.data.quiz);
-        // setSelectedQuizType(quizDetails.quizType);
-      
       } catch (error) {
         console.error("Error fetching quiz details:", error.message);
       }
@@ -38,27 +30,27 @@ const QuizzePage = () => {
   useEffect(() => {
     const currentQuestion = quizData?.questions[currentQuestionIndex];
     if (currentQuestion?.timer > 0) {
-      // Start the countdown for questions with a timer
       setCountdown(currentQuestion.timer);
       const countdownInterval = setInterval(() => {
         setCountdown((prevCountdown) => {
           if (prevCountdown === 1) {
-            // Auto-submit on reaching 0 seconds
-            handleNextQuestion();
+            if (currentQuestionIndex === quizData.questions.length - 1) {
+              // If it's the last question, automatically submit data
+              handleSubmit();
+            } else {
+              handleNextQuestion();
+            }
             clearInterval(countdownInterval);
-            return 0; // Reset countdown to 0
+            return 0;
           } else {
             return prevCountdown - 1;
           }
         });
       }, 1000);
-
-      // Clean up the interval when component unmounts or when moving to the next question
       return () => {
         clearInterval(countdownInterval);
       };
     } else {
-      // Reset countdown when moving to a question without a timer
       setCountdown(null);
     }
   }, [currentQuestionIndex, quizData]);
@@ -72,21 +64,6 @@ const QuizzePage = () => {
   };
 
   const handleNextQuestion = () => {
-    // Submit the selected option to the backend (adjust endpoint accordingly)
-    const currentQuestion = quizData.questions[currentQuestionIndex];
-    axios
-      .post("http://localhost:3001/submit-response", {
-        questionId: currentQuestion._id,
-        selectedOption: selectedOptions[currentQuestionIndex],
-      })
-      .then((response) => {
-        console.log("Response submitted successfully", response.data);
-      })
-      .catch((error) => {
-        console.error("Error submitting response", error);
-      });
-
-    // Move to the next question
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
 
@@ -99,22 +76,45 @@ const QuizzePage = () => {
   };
 
   const handleSubmit = () => {
-    // Submit the final set of responses to the backend
     const userResponses = quizData.questions.map((question, index) => {
+      const selectedOption = selectedOptions[index];
+      const isCorrect = selectedOption === question.correctAnswer;
       return {
         questionId: question._id,
-        selectedOption: selectedOptions[index],
+        selectedOption,
+        isCorrect,
       };
     });
 
+    // Send user responses to the backend
     axios
-      .post("http://localhost:3001/submit-quiz", { responses: userResponses })
+      .put(`http://localhost:3001/quiz/${quizId}`, userResponses)
       .then((response) => {
-        console.log("Quiz submitted successfully", response.data);
+        console.log("Responses submitted successfully", response.data);
       })
       .catch((error) => {
-        console.error("Error submitting quiz", error);
+        console.error("Error submitting responses", error);
       });
+
+    const finalScore = calculateScore();
+    const quizLength = quizData.questions.length;
+    // Display the final score to the user locally
+    navigate("/finalScore", { state: { finalScore, quizLength } });
+  };
+
+  const calculateScore = () => {
+    let score = 0;
+
+    quizData.questions.forEach((question, index) => {
+      const selectedOption = selectedOptions[index];
+      const correctAnswer = question.correctAnswer;
+
+      if (selectedOption === correctAnswer) {
+        score++;
+      }
+    });
+
+    return score;
   };
 
   if (!quizData) {

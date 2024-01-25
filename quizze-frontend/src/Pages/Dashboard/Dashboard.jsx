@@ -5,9 +5,32 @@ import styles from "./Dashboard.module.css";
 import Navbar from "../../Components/Navbar/Navbar";
 import Card from "../../Components/Card/Card";
 import TrendingQuizzes from "../../Components/TrendingQuizzes/TrendingQuizzes";
+import Spinner from "../Spinner/Spinner"
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { userId } = useParams();
+
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:3001/quiz/dashboard/${userId}`,
+  //         {
+  //           headers: {
+  //             token: localStorage.getItem("token"),
+  //           },
+  //         }
+  //       );
+  //       setDashboardData(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching dashboard data:", error);
+  //     }
+  //   };
+
+  //   fetchDashboardData();
+  //   setLoading(false);
+  // }, [userId]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -23,11 +46,15 @@ const Dashboard = () => {
         setDashboardData(response.data);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false); // Move setLoading(false) here
       }
     };
-
+  
     fetchDashboardData();
   }, [userId]);
+
+
   // const handleUpdateQuizList = async () => {
   //   // You can use this function to update the quiz list after creating a new quiz
   //   try {
@@ -42,9 +69,10 @@ const Dashboard = () => {
   //   }
   // };
   return (
-    <div className={styles.box}>
-      {dashboardData ? (
-        <>
+    <>
+      {!loading ? (
+        
+        <div className={styles.box}>
           <div className={styles.container}>
             <div>
               <Navbar/>
@@ -61,11 +89,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </>
+          </div>
+        
       ) : (
-        <p>Loading dashboard data...</p>
+        loading && <Spinner/> 
       )}
-    </div>
+  </>
   );
 };
 

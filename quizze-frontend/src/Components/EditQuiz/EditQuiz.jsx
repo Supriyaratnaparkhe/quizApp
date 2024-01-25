@@ -259,7 +259,7 @@ const handleDeleteQuestion = (questionIndex) => {
     setSelectedTimer(value);
   };
   const handleShareClick = () => {
-    const quizLink = `http://localhost:3001/quiz/${quizId}`;
+    const quizLink = `http://localhost:3000/liveQuiz/${quizId}`;
 
     navigator.clipboard.writeText(quizLink).then(
       () => {
@@ -309,8 +309,8 @@ const handleDeleteQuestion = (questionIndex) => {
               </div>
             </div>
             <div className={styles.but}>
-              <div className={styles.cancle}>
-                <button onClick={onClose}>Cancle</button>
+              <div className={styles.cancel}>
+                <button onClick={onClose}>cancel</button>
               </div>
               <div className={styles.continue}>
                 <button onClick={handlePage}>Continue</button>
@@ -639,8 +639,8 @@ const handleDeleteQuestion = (questionIndex) => {
               </div>
 
               <div className={styles.submitbuttons}>
-                <div id={styles.cancle}>
-                  <button onClick={onClose}>Cancle</button>
+                <div id={styles.cancel}>
+                  <button onClick={onClose}>cancel</button>
                 </div>
                 <div id={styles.submit}>
                   <button onClick={handleSubmit}>Update Quiz</button>
@@ -661,7 +661,7 @@ const handleDeleteQuestion = (questionIndex) => {
                 Congrats your Quiz is Updated!
               </div>
               <div className={styles.link}>
-                http://localhost:3001/quiz/{quizId}
+                http://localhost:3000/liveQuiz/{quizId}
               </div>
               <div className={styles.share}>
                 <button onClick={handleShareClick}>share</button>

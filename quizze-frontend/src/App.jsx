@@ -7,6 +7,7 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import Analytics from './Pages/Analytics/Analytics';
 import QnAnalysis from './Pages/QnAnalysis/QnAnalysis';
 import Quiz from './Pages/LiveQuiz/Quiz';
+import SubmitQuiz from './Pages/Submit Quiz/SubmitQuiz';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
           <Route path='/dashboard/:userId' element={<Dashboard />}/>
           <Route path='/analytics/:userId' element={<Analytics />}/>
           <Route path='/analytics/:userId/:quizId' element={<QnAnalysis />}/>
-          <Route path='/:quizId' element={<Quiz />}/>
+          <Route path='/liveQuiz/:quizId' element={<Quiz />}/>
+          <Route path='/finalScore' element={<SubmitQuiz />}/>
         </Routes>
       </BrowserRouter>
       

@@ -31,7 +31,7 @@ const DeleteQuiz = ({ onClose, onDelete, quizId }) => {
           <div className={styles.confirmbut}>
             <button onClick={handleDelete}>Confirm Delete</button>
           </div>
-          <div className={styles.canclebut}>
+          <div className={styles.cancelbut}>
             <button onClick={onClose}>Cancel</button>
           </div>
         </div>

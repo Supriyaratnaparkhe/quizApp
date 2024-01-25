@@ -2,6 +2,10 @@ import React from "react";
 import styles from "./TrendingQuizzes.module.css";
 import eyes from "../assets/eyes.png";
 const TrendingQuizzes = (props) => {
+
+  const sortedQuizDetails = props.quizDetails.sort(
+    (a, b) => b.impression - a.impression
+  );
   const shortenQuizName = (quizName) => {
     return quizName.length > 8 ? quizName.substring(0, 5) + "..." : quizName;
   };
@@ -9,7 +13,7 @@ const TrendingQuizzes = (props) => {
     <div>
       <div className={styles.headline}>Trending Quizs</div>
       <div className={styles.container}>
-        {props.quizDetails.map((quiz, index) => (
+        {sortedQuizDetails.map((quiz, index) => (
           <div key={index} className={styles.quizcontainer}>
             <div className={styles.row1}>
               <div className={styles.quizname}>

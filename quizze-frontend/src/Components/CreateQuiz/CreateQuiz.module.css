@@ -100,7 +100,7 @@
   justify-content: center;
   gap: 50px;
 }
-.cancle button {
+.cancel button {
   border-radius: 10px;
   background: #fff;
   border: none;
@@ -334,7 +334,7 @@
   justify-content: center;
   gap: 150px;
 }
-#cancle button {
+#cancel button {
   width: 279px;
   height: 46.144px;
   border-radius: 10px;
