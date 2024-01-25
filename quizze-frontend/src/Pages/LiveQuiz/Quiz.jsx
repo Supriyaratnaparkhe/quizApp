@@ -19,6 +19,7 @@ const QuizzePage = () => {
         );
 
         setQuizData(response.data.quiz);
+        console.log(response.data.quiz.questions[1].optionType);
       } catch (error) {
         console.error("Error fetching quiz details:", error.message);
       }
@@ -138,8 +139,9 @@ const QuizzePage = () => {
             )}
           </div>
           <p className={styles.quizTitle}>{currentQuestion.questionText}</p>
-          <div className={styles.optionsContainer}>
-            {currentQuestion.options.map((option) => (
+
+          {/* {currentQuestion.options.map((option) => (
+             
               <div
                 key={option._id}
                 className={`${styles.optionButton} ${
@@ -151,8 +153,84 @@ const QuizzePage = () => {
               >
                 {option.optionText}
               </div>
-            ))}
+            ))} */}
+
+          <div>
+            {currentQuestion.optionType === "text" ? (
+              <div className={styles.optionsContainer}>
+                {currentQuestion.options.map((option) => (
+                  <div
+                    key={option._id}
+                    className={`${styles.optionButton} ${
+                      selectedOptions[currentQuestionIndex] ===
+                      option.optionText
+                        ? styles.selected
+                        : ""
+                    }`}
+                    onClick={() => handleOptionClick(option.optionText)}
+                  >
+                    <div id={styles.text}>{option.optionText}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              ""
+            )}
           </div>
+          <div>
+            {currentQuestion.optionType === "image" ? (
+              <div className={styles.optionsContainer}>
+                {currentQuestion.options.map((option) => (
+                  <div
+                    key={option._id}
+                    className={`${styles.optionButton} ${
+                      selectedOptions[currentQuestionIndex] ===
+                      option.optionImgURL
+                        ? styles.selected
+                        : ""
+                    }`}
+                    onClick={() => handleOptionClick(option.optionImgURL)}
+                  >
+                    <div id={styles.img}>
+                      <img src={option.optionImgURL} alt="url" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+          <div>
+            {currentQuestion.optionType === "text-and-image" ? (
+              <div className={styles.optionsContainer}>
+                {currentQuestion.options.map((option) => (
+                  <div
+                    key={option._id}
+                    className={`${styles.optionButton} ${
+                      selectedOptions[currentQuestionIndex] ===
+                      `${option.optionText},${option.optionImgURL}`
+                        ? styles.selected
+                        : ""
+                    }`}
+                    onClick={() =>
+                      handleOptionClick(
+                        `${option.optionText},${option.optionImgURL}`
+                      )
+                    }
+                  >
+                    <div id={styles.text}>{option.optionText}</div>
+                    <div id={styles.img}>
+                      <img src={option.optionImgURL} alt="url" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+
           <div className={styles.nextContainer}>
             {currentQuestionIndex < quizData.questions.length - 1 ? (
               <button
