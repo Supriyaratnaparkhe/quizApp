@@ -30,15 +30,15 @@ const QnA = (props) => {
             <div className={styles.data}>
               {props.quizType === "q&a" ? (
                 <>
-                  <div className={styles.card}>
+                  <div className={styles.card1}>
                     <span>{questions.answerCount}</span>people Attempted the
                     question
                   </div>
-                  <div className={styles.card}>
+                  <div className={styles.card1}>
                     <span>{questions.correctCount}</span>people Answered
                     Correctly
                   </div>
-                  <div className={styles.card}>
+                  <div className={styles.card1}>
                     <span>{questions.incorrectCount}</span>people Answered
                     Incorrectly
                   </div>
@@ -46,22 +46,13 @@ const QnA = (props) => {
               ) : (
                 <>
                   {Object.entries(questions.optionVotes).map(
-                    ([optionText, count], optionIndex) => (
-                      <div className={styles.card} key={optionIndex}>
-                        <span>{count}</span>Option: {optionText}
+                    ([optionIndex, count]) => (
+                      <div className={styles.card2} key={optionIndex}>
+                        <span>{count}</span>Option {Number(optionIndex)+1} 
                       </div>
                     )
                   )}
                 </>
-                // <>
-                //   {Object.entries(questions.optionVotes).map(
-                //     ([optionText, count], optionIndex) => (
-                //       <div className={styles.card} key={optionIndex}>
-                //         <span>{count}</span>Option: {optionText !== undefined ? optionText : optionIndex}
-                //       </div>
-                //     )
-                //   )}
-                // </>
               )}
             </div>
             <div className={styles.stroke}>

@@ -36,24 +36,24 @@ const CreateQuizForm = ({ userId, onClose }) => {
     const { name, value } = e.target;
 
     if (optionIndex !== null) {
-      // Handle changes in options
-      // setQuizData((prevData) => ({
-      //   ...prevData,
-      //   questions: prevData.questions.map((question, i) =>
-      //     i === questionIndex
-      //       ? {
-      //           ...question,
-      //           options: question.options.map((option, j) =>
-      //             j === optionIndex ? { ...option, [name]: value } : option
-      //           ),
-      //           optionVotes: question.options.reduce((votes, option) => {
-      //             votes[option.optionText || optionIndex] = 0;
-      //             return votes;
-      //           }, {}),
-      //         }
-      //       : question
-      //   ),
-      // }));
+    //   // Handle changes in options
+    //   setQuizData((prevData) => ({
+    //     ...prevData,
+    //     questions: prevData.questions.map((question, i) =>
+    //       i === questionIndex
+    //         ? {
+    //             ...question,
+    //             options: question.options.map((option, j) =>
+    //               j === optionIndex ? { ...option, [name]: value } : option
+    //             ),
+    //             optionVotes: question.options.reduce((votes, option) => {
+    //               votes[option.optionText || optionIndex] = 0;
+    //               return votes;
+    //             }, {}),
+    //           }
+    //         : question
+    //     ),
+    //   }));
       setQuizData((prevData) => ({
         ...prevData,
         questions: prevData.questions.map((question, i) =>
@@ -67,7 +67,7 @@ const CreateQuizForm = ({ userId, onClose }) => {
                       ),
                       optionVotes: {
                         ...question.optionVotes,
-                        [`${optionIndex}`]: 0,
+                        [optionIndex]: 0,
                       },
                     }
                   : { [name]: value }),
@@ -260,7 +260,7 @@ const CreateQuizForm = ({ userId, onClose }) => {
     setSelectedTimer(value);
   };
   const handleShareClick = () => {
-    const quizLink = `http://localhost:3000/liveQuiz/${quizId}`;
+    const quizLink = `http://localhost:3000/quiz/${quizId}`;
 
     navigator.clipboard.writeText(quizLink).then(
       () => {
@@ -660,7 +660,7 @@ const CreateQuizForm = ({ userId, onClose }) => {
                 Congrats your Quiz is Published!
               </div>
               <div className={styles.link}>
-                http://localhost:3000/liveQuiz/{quizId}
+                http://localhost:3000/quiz/{quizId}
               </div>
               <div className={styles.share}>
                 <button onClick={handleShareClick}>share</button>

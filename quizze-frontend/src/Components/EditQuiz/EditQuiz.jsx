@@ -62,13 +62,17 @@ const EditQuizForm = ({ onClose, userId, quizId }) => {
           i === questionIndex
             ? {
                 ...question,
-                options: question.options.map((option, j) =>
-                  j === optionIndex ? { ...option, [name]: value } : option
-                ),
-                optionVotes: question.options.reduce((votes, option) => {
-                  votes[option.optionText || optionIndex] = 0;
-                  return votes;
-                }, {}),
+                ...(optionIndex !== null
+                  ? {
+                      options: question.options.map((option, j) =>
+                        j === optionIndex ? { ...option, [name]: value } : option
+                      ),
+                      optionVotes: {
+                        ...question.optionVotes,
+                        [optionIndex]: 0,
+                      },
+                    }
+                  : { [name]: value }),
               }
             : question
         ),
@@ -259,7 +263,7 @@ const handleDeleteQuestion = (questionIndex) => {
     setSelectedTimer(value);
   };
   const handleShareClick = () => {
-    const quizLink = `http://localhost:3000/liveQuiz/${quizId}`;
+    const quizLink = `http://localhost:3000/quiz/${quizId}`;
 
     navigator.clipboard.writeText(quizLink).then(
       () => {
@@ -368,8 +372,8 @@ const handleDeleteQuestion = (questionIndex) => {
                   name="questionText"
                   value={
                     quizData.questions[activeQuestionIndex] &&
-                    quizData.questions[activeQuestionIndex].optionType
-                      ? quizData.questions[activeQuestionIndex].optionType
+                    quizData.questions[activeQuestionIndex].questionText
+                      ? quizData.questions[activeQuestionIndex].questionText
                       : ""
                   }
                   onChange={(e) => handleChange(e, activeQuestionIndex)}
@@ -661,7 +665,7 @@ const handleDeleteQuestion = (questionIndex) => {
                 Congrats your Quiz is Updated!
               </div>
               <div className={styles.link}>
-                http://localhost:3000/liveQuiz/{quizId}
+                http://localhost:3000/quiz/{quizId}
               </div>
               <div className={styles.share}>
                 <button onClick={handleShareClick}>share</button>

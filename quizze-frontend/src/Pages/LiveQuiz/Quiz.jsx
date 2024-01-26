@@ -19,7 +19,6 @@ const QuizzePage = () => {
         );
 
         setQuizData(response.data.quiz);
-        console.log(response.data.quiz.questions[1].optionType);
       } catch (error) {
         console.error("Error fetching quiz details:", error.message);
       }
@@ -38,7 +37,7 @@ const QuizzePage = () => {
             if (currentQuestionIndex === quizData.questions.length - 1) {
               // If it's the last question, automatically submit data
               handleSubmit();
-            } else {
+            } else if (quizData.quizType) {
               handleNextQuestion();
             }
             clearInterval(countdownInterval);
@@ -103,6 +102,34 @@ const QuizzePage = () => {
     navigate("/finalScore", { state: { finalScore, quizLength } });
   };
 
+  const handlePollSubmit = () => {
+    const userResponses = selectedOptions.map((selectedOption, index) => {
+      const question = quizData.questions[index];
+      const optionIndex = question.options.findIndex((option) => {
+        return (
+          option.optionText === selectedOption ||
+          option.optionImgURL === selectedOption ||
+          `${option.optionText},${option.optionImgURL}` === selectedOption
+        );
+      });
+      console.log(optionIndex.toString());
+      return {
+        questionId: quizData.questions[index]._id,
+        selectedOption: optionIndex.toString(),
+      };
+    });
+    // Send user responses to the backend
+    axios
+      .put(`http://localhost:3001/quiz/poll/${quizId}`, userResponses)
+      .then((response) => {
+        console.log("Responses submitted successfully", response.data);
+      })
+      .catch((error) => {
+        console.error("Error submitting responses", error);
+      });
+    navigate("/finalPoll");
+  };
+
   const calculateScore = () => {
     let score = 0;
 
@@ -122,132 +149,231 @@ const QuizzePage = () => {
     return <div>Loading...</div>;
   }
 
+  const questionType = quizData.quizType;
   const currentQuestion = quizData.questions[currentQuestionIndex];
 
   return (
-    <div className={styles.main}>
-      <center>
-        <div className={styles.quizContainer}>
-          <div className={styles.quizeheader}>
-            <div className={styles.questionNumber}>
-              {currentQuestionIndex + 1}/{quizData.questions.length}
+    <>
+      <div>
+        {questionType === "poll" ? (
+          <div className={styles.main}>
+            <div className={styles.quizContainer}>
+              <div className={styles.quizeheader}>
+                <div className={styles.questionNumber}>
+                  {currentQuestionIndex + 1}/{quizData.questions.length}
+                </div>
+              </div>
+              <div className={styles.quizTitle}>
+                {currentQuestion.questionText}
+              </div>
+              <div>
+                {currentQuestion.optionType === "text" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonText} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          option.optionText
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() => handleOptionClick(option.optionText)}
+                      >
+                        <div id={styles.text}>{option.optionText}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div>
+                {currentQuestion.optionType === "image" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonImage} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          option.optionImgURL
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() => handleOptionClick(option.optionImgURL)}
+                      >
+                        <div id={styles.img}>
+                          <img src={option.optionImgURL} alt="url" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div>
+                {currentQuestion.optionType === "text-and-image" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonTextImg} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          `${option.optionText},${option.optionImgURL}`
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleOptionClick(
+                            `${option.optionText},${option.optionImgURL}`
+                          )
+                        }
+                      >
+                        <div id={styles.textImg}>{option.optionText}</div>
+                        <div id={styles.imgText}>
+                          <img src={option.optionImgURL} alt="url" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+
+              <div className={styles.nextContainer}>
+                {currentQuestionIndex < quizData.questions.length - 1 ? (
+                  <button
+                    className={styles.nextButton}
+                    onClick={handleNextQuestion}
+                  >
+                    NEXT
+                  </button>
+                ) : (
+                  <button
+                    className={styles.nextButton}
+                    onClick={handlePollSubmit}
+                  >
+                    SUBMIT
+                  </button>
+                )}
+              </div>
             </div>
-            {currentQuestion.timer > 0 && (
-              <div className={styles.questionTimer}>
-                {formatTime(countdown)}s
-              </div>
-            )}
           </div>
-          <p className={styles.quizTitle}>{currentQuestion.questionText}</p>
-
-          {/* {currentQuestion.options.map((option) => (
-             
-              <div
-                key={option._id}
-                className={`${styles.optionButton} ${
-                  selectedOptions[currentQuestionIndex] === option.optionText
-                    ? styles.selected
-                    : ""
-                }`}
-                onClick={() => handleOptionClick(option.optionText)}
-              >
-                {option.optionText}
-              </div>
-            ))} */}
-
-          <div>
-            {currentQuestion.optionType === "text" ? (
-              <div className={styles.optionsContainer}>
-                {currentQuestion.options.map((option) => (
-                  <div
-                    key={option._id}
-                    className={`${styles.optionButton} ${
-                      selectedOptions[currentQuestionIndex] ===
-                      option.optionText
-                        ? styles.selected
-                        : ""
-                    }`}
-                    onClick={() => handleOptionClick(option.optionText)}
-                  >
-                    <div id={styles.text}>{option.optionText}</div>
+        ) : questionType === "q&a" ? (
+          <div className={styles.main}>
+            <div className={styles.quizContainer}>
+              <div className={styles.quizeheader}>
+                <div className={styles.questionNumber}>
+                  {currentQuestionIndex + 1}/{quizData.questions.length}
+                </div>
+                {currentQuestion.timer > 0 && (
+                  <div className={styles.questionTimer}>
+                    {formatTime(countdown)}s
                   </div>
-                ))}
+                )}
               </div>
-            ) : (
-              ""
-            )}
-          </div>
-          <div>
-            {currentQuestion.optionType === "image" ? (
-              <div className={styles.optionsContainer}>
-                {currentQuestion.options.map((option) => (
-                  <div
-                    key={option._id}
-                    className={`${styles.optionButton} ${
-                      selectedOptions[currentQuestionIndex] ===
-                      option.optionImgURL
-                        ? styles.selected
-                        : ""
-                    }`}
-                    onClick={() => handleOptionClick(option.optionImgURL)}
-                  >
-                    <div id={styles.img}>
-                      <img src={option.optionImgURL} alt="url" />
-                    </div>
+              <div className={styles.quizTitle}>
+                {currentQuestion.questionText}
+              </div>
+              <div>
+                {currentQuestion.optionType === "text" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonText} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          option.optionText
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() => handleOptionClick(option.optionText)}
+                      >
+                        <div id={styles.text}>{option.optionText}</div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  ""
+                )}
               </div>
-            ) : (
-              ""
-            )}
-          </div>
-          <div>
-            {currentQuestion.optionType === "text-and-image" ? (
-              <div className={styles.optionsContainer}>
-                {currentQuestion.options.map((option) => (
-                  <div
-                    key={option._id}
-                    className={`${styles.optionButton} ${
-                      selectedOptions[currentQuestionIndex] ===
-                      `${option.optionText},${option.optionImgURL}`
-                        ? styles.selected
-                        : ""
-                    }`}
-                    onClick={() =>
-                      handleOptionClick(
-                        `${option.optionText},${option.optionImgURL}`
-                      )
-                    }
-                  >
-                    <div id={styles.text}>{option.optionText}</div>
-                    <div id={styles.img}>
-                      <img src={option.optionImgURL} alt="url" />
-                    </div>
+              <div>
+                {currentQuestion.optionType === "image" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonImage} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          option.optionImgURL
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() => handleOptionClick(option.optionImgURL)}
+                      >
+                        <div id={styles.img}>
+                          <img src={option.optionImgURL} alt="url" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  ""
+                )}
               </div>
-            ) : (
-              ""
-            )}
-          </div>
+              <div>
+                {currentQuestion.optionType === "text-and-image" ? (
+                  <div className={styles.optionsContainer}>
+                    {currentQuestion.options.map((option) => (
+                      <div
+                        key={option._id}
+                        className={`${styles.optionButtonTextImg} ${
+                          selectedOptions[currentQuestionIndex] ===
+                          `${option.optionText},${option.optionImgURL}`
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleOptionClick(
+                            `${option.optionText},${option.optionImgURL}`
+                          )
+                        }
+                      >
+                        <div id={styles.textImg}>{option.optionText}</div>
+                        <div id={styles.imgText}>
+                          <img src={option.optionImgURL} alt="url" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
 
-          <div className={styles.nextContainer}>
-            {currentQuestionIndex < quizData.questions.length - 1 ? (
-              <button
-                className={styles.nextButton}
-                onClick={handleNextQuestion}
-              >
-                NEXT
-              </button>
-            ) : (
-              <button className={styles.nextButton} onClick={handleSubmit}>
-                SUBMIT
-              </button>
-            )}
+              <div className={styles.nextContainer}>
+                {currentQuestionIndex < quizData.questions.length - 1 ? (
+                  <button
+                    className={styles.nextButton}
+                    onClick={handleNextQuestion}
+                  >
+                    NEXT
+                  </button>
+                ) : (
+                  <button className={styles.nextButton} onClick={handleSubmit}>
+                    SUBMIT
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </center>
-    </div>
+        ) : (
+          <h1>Unknown question type</h1>
+        )}
+      </div>
+    </>
   );
 };
 
